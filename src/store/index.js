@@ -10,7 +10,8 @@ export default new Vuex.Store({
     list: [],
     inputValue: 'aaa',
     // 下一个id
-    nextId : 5
+    nextId : 5,
+    viewKey: 'all'
   },
   mutations: {
     initList(state, list) {
@@ -46,9 +47,15 @@ export default new Vuex.Store({
       if( i !== -1) {
         state.list[i].done = param.status
       }
+    },
+    // 清除已完成任务
+    cleanDone(state) {
+      state.list = state.list.filter(x => x.done === false)
+    },
+    // 修改视图的关键字
+    changeViewKey(state, key) {
+      state.viewKey = key
     }
-  },
-  actions: {
   },
   actions: {
     getList(context) {
@@ -56,6 +63,26 @@ export default new Vuex.Store({
         console.log(data);
         context.commit('initList', data)
       })
+    }
+  },
+  getters: {
+    // 统计未完成的任务条数
+    unDoneLength(state) {
+      return state.list.filter(x => x.done === false).length
+      // 对list进行filter过滤，查到未完成（x.done === false）的形成一个新数组，求取这个数组的长度既可得到未完成数
+    },
+    // 
+    infolist(state) {
+      if(state.viewKey === 'all'){
+        return state.list
+      }
+      if(state.viewKey === 'undone'){
+        return state.list.filter(x => !x.done)
+      }
+      if(state.viewKey === 'done') {
+        return state.list.filter(x => x.done)
+      }
+      return state.list
     }
   },
   modules: {
